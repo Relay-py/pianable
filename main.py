@@ -165,6 +165,8 @@ def main():
                 elif not corners_saved and corner_count == 4:
                     corners_saved = True
 
+        # --------------- OPENCV LOOP ----------------
+
         if top_cap.isOpened():
             top_frame = top_cap.read()
 
@@ -179,9 +181,6 @@ def main():
             top_frame = instrument_front.find_table(top_frame)
 
             # cv2.imshow("Top Frame", top_frame)
-
-            # convert and draw frame in pygame
-            draw_frame(screen=pygame_screen, frame=top_frame)
 
             # convert and draw frame in pygame
             draw_frame(screen=pygame_screen, frame=top_frame)
