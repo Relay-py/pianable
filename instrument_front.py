@@ -126,9 +126,8 @@ class InstrumentFront():
 
         return edges
 
-    
 
-    def is_pressed(self, finger: list[float], left_point, right_point, threshold: int) -> bool:
+    def is_pressed(self, finger: list[float], threshold: int) -> bool:
         # Returns whether a given finger is close enough to the table line 
         # to be considered pressed
         # Pressing is determined by a threshold
@@ -137,12 +136,22 @@ class InstrumentFront():
             return False
                 
         # Calculate distance to the table line
-        dist = distance_to_line(finger, left_point, right_point)
+        dist = distance_to_line(finger, self.table_endpoints[0], self.table_endpoints[1])
 
         return dist <= threshold
     
 
+    def set_endpoints(self, endpoint_list):
+        """
+        sorts 2 endpoints into left, right
+        and sets the attribute
 
+        :param corner_list: list of unordered corners
+        """
+
+        endpoint_list.sort(key=(lambda a : a[0]))
+
+        self.table_endpoints = np.array(endpoint_list)
 
 
     

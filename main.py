@@ -149,6 +149,7 @@ def main():
 
     # keyboard points
     instrument_top = InstrumentTop([], 14)
+    instrument_front = InstrumentFront([], [])
     white_key_tops = []
     white_key_bases = []
     black_key_tops = []
@@ -173,11 +174,10 @@ def main():
     # Initialize mediapipe hand models
     hands_top, hands_front = initialize_mediapipe_hands(2)
 
-    instrument_front = InstrumentFront([])
 
     # Initialize the camera. 
-    top_cap = video.Video(1)
-    front_cap =video.Video(2)
+    top_cap = video.Video(0)
+    front_cap =video.Video(1)
 
 
     #Set resolution
@@ -185,7 +185,6 @@ def main():
     #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     #cap2.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     #cap2.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-    instrument_front = InstrumentFront([], [])
 
     total_time = 0
     total_frames = 0
@@ -224,6 +223,8 @@ def main():
                         # UPDATE INSTRUMENT_FRONT KEYPOINTS HERE
                         state = 2
 
+                        instrument_front.set_endpoints(endpoint_positions)
+
         # Read top cap frame
         if top_cap.isOpened():
             top_frame = top_cap.read()
@@ -255,22 +256,18 @@ def main():
                      colour=corner_colour[corners_saved])
 
         elif state == 2 and top_cap.isOpened() and front_cap.isOpened():
-            print("RUNNING STATE!")
             
         # --------------- OPENCV LOOP ----------------
 
             if top_cap.isOpened():
-
                 # Run processing for hand keypoints
                 top_hand_keypoints = process_frame(top_frame, hands_top)
 
                 top_frame = draw_hand_points(top_frame, top_hand_keypoints)
 
-                top_frame = instrument_front.find_table(top_frame)
-
                 # cv2.imshow("Top Frame", top_frame)
 
-                # convert and draw frame in pygame
+                # convert and draw frame in pygame4
                 draw_frame(screen=pygame_screen, frame=top_frame)
 
             # if front_cap.isOpened():
