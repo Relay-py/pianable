@@ -173,24 +173,25 @@ def main():
     # Initialize mediapipe hand models
     hands_top, hands_front = initialize_mediapipe_hands(2)
 
-    # Initialize cameras
-    top_ip = os.environ.get('TOP_IP')
-    top_port = os.environ.get('TOP_PORT')
-    top_url = f"http://{top_ip}:{top_port}/video"
-    top_cap = video.Video(0)
+    instrument_front = InstrumentFront([])
 
-    front_ip = os.environ.get('FRONT_IP')
-    front_port = os.environ.get('FRONT_PORT')
-    front_url = f"http://{front_ip}:{front_port}/video"
-    front_cap = video.Video(front_url)
+    # Initialize the camera. 
+    top_cap = video.Video(1)
+    front_cap =video.Video(2)
 
+
+    #Set resolution
+    #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    #cap2.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    #cap2.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     instrument_front = InstrumentFront([], [])
 
     total_time = 0
     total_frames = 0
 
     # -------------------------------------------
-
+    
     # --------------- EVENT LOOP ----------------
     while running:
         start = time.time()
