@@ -121,7 +121,7 @@ def main():
 
     # detect window height and width
     window_width, window_height = pygame.display.get_surface().get_size()
-    display_width, display_height = window_width//2, window_height//2
+    window_centre_x, window_centre_y = window_width//2, window_height//2
 
     total_time = 0
     total_frames = 0
@@ -208,7 +208,7 @@ def main():
 
                 # convert and draw frame in pygame4
                 draw_functions.draw_frame(screen=pygame_screen, frame=top_frame, x=0, y=0,
-                                          width=display_width, height=display_height)
+                                          width=window_centre_x, height=window_centre_y)
 
             # Process front camera
             if front_cap.isOpened():
@@ -228,8 +228,8 @@ def main():
 
                 # convert and draw frame in pygame4
                 draw_functions.draw_frame(screen=pygame_screen, frame=front_frame, 
-                                          x = display_width, y = display_height,
-                                          width=display_width, height=display_height)
+                                          x = window_centre_x, y = window_centre_y,
+                                          width=window_centre_x, height=window_centre_y)
         
         # if not top_cap.isOpened() and not front_cap.isOpened():
         if not top_cap.isOpened():

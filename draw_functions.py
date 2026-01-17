@@ -10,6 +10,18 @@ def draw_hand_points(frame, hand_keypoints):
     return frame
 
 
+def draw_hand_points_pg(screen, hand_keypoints):
+    """
+    draw hand keypoints
+    
+    :param screen: pygame screen
+    :param hand_keypoints: list of keybpoints
+    """
+    for point in hand_keypoints:
+        pygame.draw.circle(surface=screen, color="red",
+                           center=point, radius=2)
+
+
 def draw_frame(screen, frame, x=0, y=0, width=None, height=None):
     """
     draws opencv frame on pygame screen
