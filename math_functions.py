@@ -63,3 +63,7 @@ def in_quadrilateral(p, a, b, c, d):
     point_triangle_sum = triangle_area(a, b, p) + triangle_area(b, p, c) + triangle_area(c, p, d) + triangle_area(d, p, a)
 
     return abs(quadrilateral_area - point_triangle_sum) < 0.1
+
+# def is_right_quadrelateral(p, a, b):
+#     '''checks if it s at the right of the quadrelateral '''
+    
