@@ -41,9 +41,9 @@ class InstrumentTop:
                 previous = ((lines_top_point[i-1] - lines_bottom_point[i-1]) * 3 / 10) + lines_bottom_point[i-1]
                 next  = ((lines_top_point[i+1] - lines_bottom_point[i+1]) * 3 / 10) + lines_bottom_point[i+1]
 
-                first_top_corner = lines_top_point[i] - (lines_top_point[i]-lines_top_point[i-1])/4
+                first_top_corner =lines_top_point[i] -  (lines_top_point[i]-lines_top_point[i-1])/4 
                 second_top_corner = (lines_top_point[i+1]-lines_top_point[i])/4 + lines_top_point[i]
-                first_bottom_corner = value - (next - value)/4
+                first_bottom_corner = value - (next - value)/4 
                 second_botton_corner = (value -previous)/4 + value
                 black_keys_top_point.append(first_top_corner)
                 black_keys_bottom_point.append(first_bottom_corner)
@@ -86,7 +86,7 @@ class InstrumentTop:
             low = 0
             high = len(lines_bottom_point)-1
             while (low <= high) :
-                mid = low + (high - low) / 2
+                mid = low + (high - low) // 2
                 if in_quadrilateral(finger, lines_top_point[mid], lines_top_point[mid+1], lines_bottom_point[mid], lines_bottom_point[mid+1]) :
                     if in_quadrilateral(finger, black_keys_top_point[2*mid], black_keys_top_point[2*mid+1], black_keys_bottom_point[2*mid], black_keys_bottom_point[2*mid+1]):
                         notes.append(get_white_note(mid)-1)
@@ -103,6 +103,8 @@ class InstrumentTop:
 
                 else:
                     high = mid - 1
+
+        return notes
 
 
         
@@ -122,7 +124,12 @@ if  __name__=="__main__":
     l3 = [7,0]
     l4 = [7,7]
     instrument.set_corners([l1,l2,l3,l4])
-    print(instrument.get_all_keys_points()[3])
+    a=instrument.get_all_keys_points()
+    print(len(a[3]))
+    fingers=([2.6,4],[2.3,3]) 
+    b= instrument.get_notes(fingers, a[0], a[1], a[2], a[3])
+    print(b)
+
 
     
     

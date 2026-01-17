@@ -70,12 +70,14 @@ def in_quadrilateral(p, a, b, c, d):
 
 def is_right_of_line(p, a, b):
     '''checks if point p is in the right of the line between a and b '''
+    if (b[0] - a[0]) < 0.001 :
+        return  a[0] < p[0] 
     slope  = (b[1] - a[1] )/ (b[0] - a[0] )
     basis  = a[1] - slope*a[0]
     if slope > 0 :
-        return a[1]- (slope * a[0] +basis) < 0
+        return p[1]- (slope * p[0] +basis) < 0
     else :
-        return a[1]- (slope * a[0] +basis) > 0
+        return p[1]- (slope * p[0] +basis) > 0
     
 def get_white_note(index):
     return 5*(index//7) +index + index%7 -1 *(index%7 > 2)
