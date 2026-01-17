@@ -72,16 +72,20 @@ def draw_hand_points(frame, hand_keypoints):
     return frame
 
 
-def draw_frame(screen, frame):
+def draw_frame(screen, frame, start_point=(0, 0), width=None, height=None):
     """
     draws opencv frame on pygame screen
 
     :param screen: pygame screen
     :param frame: frame to draw (opencv brg matrix)
+    :param start_point: top left corner formatted (x, y)
     """
+    if width is not None and height is not None:
+        frame = cv2.resize(frame, (width, height))
+
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame_surface = pygame.surfarray.make_surface(frame_rgb.swapaxes(0, 1))
-    screen.blit(frame_surface, (0, 0))
+    screen.blit(frame_surface, start_point)
 
 
 def draw_points(screen, point_list, colour):
@@ -207,11 +211,13 @@ def main():
     top_cap = video.Video(0)
     front_cap = video.Video(1)
 
-    # Set resolution
-    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-    # cap2.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    # cap2.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+    #Set resolution
+    #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    #cap2.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    #cap2.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    window_width, window_height = pygame.display.get_surface().get_size()
 
     total_time = 0
     total_frames = 0
@@ -290,26 +296,27 @@ def main():
                 # Run processing for hand keypoints
                 top_hand_keypoints = process_frame(top_frame, hands_top)
 
+                # Draw hand points
                 top_frame = draw_hand_points(top_frame, top_hand_keypoints)
 
-                # cv2.imshow("Top Frame", top_frame)
+                # convert and draw frame in pygame4
+                draw_frame(screen=pygame_screen, frame=top_frame, start_point=(0, 0), width=window_width//2, height=window_height//2)
+
+            if front_cap.isOpened():
+                front_frame = front_cap.read()
+
+                if front_frame is None:
+                    continue
+
+                # Run processing for hand keypoints
+                front_hand_keypoints = process_frame(front_frame, hands_front)
+
+                # Draw hand points
+                front_frame = draw_hand_points(front_frame, front_hand_keypoints)
 
                 # convert and draw frame in pygame4
-                # draw_frame(screen=pygame_screen, frame=top_frame)
-
-            # if front_cap.isOpened():
-            #     front_frame = front_cap.read()
-
-            #     if front_frame is None:
-            #         continue
-
-            #     # Run processing for hand keypoints
-            #     front_hand_keypoints = process_frame(front_frame, hands_front)
-
-            #     front_frame = draw_hand_points(front_frame, front_hand_keypoints)
-
-            #     cv2.imshow("Front Frame", front_frame)
-
+                draw_frame(screen=pygame_screen, frame=front_frame, start_point=(0, window_height//2), width=window_width//2, height=window_height//2)
+        
         # draw piano white keys
         draw_white_keys(screen=pygame_screen,
                         key_tops=white_key_tops,
