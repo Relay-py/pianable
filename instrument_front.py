@@ -4,8 +4,9 @@ from math_functions import distance_to_line
 
 
 class InstrumentFront():
-    def __init__(self, hand_keypoints):
+    def __init__(self, hand_keypoints, table_endpoints):
         self.hand_keypoints = hand_keypoints
+        self.table_endpoints = table_endpoints
 
 
     def get_average_contour_y(self, contour):

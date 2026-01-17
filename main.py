@@ -84,16 +84,16 @@ def draw_frame(screen, frame):
     screen.blit(frame_surface, (0, 0))
 
 
-def draw_corners(screen, corner_list, colour):
+def draw_points(screen, point_list, colour):
     """
     draw list of corners on given screen, with colour depending on whether they
     have been saved or not
     
     :param screen: pygame screen
-    :param corner_list: list of corner positions
+    :param point_list: list of corner positions
     :param corners_saved: boolean
     """
-    for corner in corner_list:
+    for corner in point_list:
         pygame.draw.circle(surface=screen,
                        color=colour,
                        center=corner,
@@ -127,7 +127,7 @@ def draw_white_keys(screen, key_tops, key_bases):
 def main():
     load_dotenv()
 
-    # -------------- PYGAME THINGS -----------
+    # -------------- PYGAME THINGS --------------
 
     # initialize pygame
     pygame.init()
@@ -155,30 +155,43 @@ def main():
     black_key_bases = []
 
     # -----------------------------------------
+    # array of table endpoints clicked
+    endpoint_positions = []
+    # endpoints saved
+    endpoints_saved = False
+    # colour to indicate endpoint save status
+    endpoint_colour = {True: "green", False: "red"}
 
-    # ------------ OPENCV (?) -----------------
+    # 0 -> draw piano corners
+    # 1 -> draw table endpoints
+    # 2 -> running
+    state = 0
+
+
+    # -------------- PROCESSING INIT --------------
 
     # Initialize mediapipe hand models
     hands_top, hands_front = initialize_mediapipe_hands(2)
 
-    # Initialize cameras
-    top_ip = os.environ.get('TOP_IP')
-    top_port = os.environ.get('TOP_PORT')
-    top_url = f"http://{top_ip}:{top_port}/video"
-    top_cap = video.Video(0)
-
-    # front_ip = os.environ.get('FRONT_IP')
-    # front_port = os.environ.get('FRONT_PORT')
-    # front_url = f"http://{front_ip}:{front_port}/video"
-    # front_cap = video.Video(front_url)
-
     instrument_front = InstrumentFront([])
+
+    # Initialize the camera. 
+    top_cap = video.Video(1)
+    front_cap =video.Video(2)
+
+
+    #Set resolution
+    #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    #cap2.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    #cap2.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    instrument_front = InstrumentFront([], [])
 
     total_time = 0
     total_frames = 0
 
     # -------------------------------------------
-
+    
     # --------------- EVENT LOOP ----------------
     while running:
         start = time.time()
@@ -189,56 +202,89 @@ def main():
                 running = False
             # check for mouse left click
             if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
-                # 4 corners not clicked yet -> add corner
-                corner_count = len(corner_positions)
-                if not corners_saved and 0 <= corner_count <= 3:
-                    corner_positions.append(event.pos)
-                    
-                # 4 corners clicked -> confirm
-                elif not corners_saved and corner_count == 4:
-                    corners_saved = True
-                    # pass to calculator
-                    instrument_top.set_corners(corner_positions)
-                    # get back all key corners
-                    white_key_tops, white_key_bases, black_key_tops, black_key_bases = instrument_top.get_all_keys_points()
+                # draw piano corner points
+                if state == 0:
+                    # 4 corners not clicked yet -> add corner
+                    if len(corner_positions) <= 3:
+                        corner_positions.append(event.pos)
+                    # 4 corners clicked -> confirm
+                    elif len(corner_positions) == 4:
+                        state = 1
+                        # pass to calculator
+                        instrument_top.set_corners(corner_positions)
+                        # get back all key corners
+                        white_key_tops, white_key_bases, black_key_tops, black_key_bases = instrument_top.get_all_keys_points()
 
-        # --------------- OPENCV LOOP ----------------
+                elif state == 1:
+                    # 2 endpoints not clicked yet -> add endpoint
+                    if len(endpoint_positions) <= 1:
+                        endpoint_positions.append(event.pos)
+                    # 2 endpoints clicked -> confirm
+                    elif len(endpoint_positions) == 2:
+                        # UPDATE INSTRUMENT_FRONT KEYPOINTS HERE
+                        state = 2
 
+        # Read top cap frame
         if top_cap.isOpened():
             top_frame = top_cap.read()
 
             if top_frame is None:
                 continue
 
-            # Run processing for hand keypoints
-            top_hand_keypoints = process_frame(top_frame, hands_top)
+        # Read bottom cap frame
+        if front_cap.isOpened():
+            front_frame = front_cap.read()
 
-            top_frame = draw_hand_points(top_frame, top_hand_keypoints)
+            if front_frame is None:
+                continue
 
-            top_frame = instrument_front.find_table(top_frame)
+        # Draw pygame frame for each state
+        if state == 0 and top_cap.isOpened():
+            draw_frame(screen=pygame_screen, frame=top_frame)
 
-            # cv2.imshow("Top Frame", top_frame)
-
-            # convert and draw frame in pygame
-            # draw_frame(screen=pygame_screen, frame=top_frame)
-
-        # if front_cap.isOpened():
-        #     front_frame = front_cap.read()
-
-        #     if front_frame is None:
-        #         continue
-
-        #     # Run processing for hand keypoints
-        #     front_hand_keypoints = process_frame(front_frame, hands_front)
-
-        #     front_frame = draw_hand_points(front_frame, front_hand_keypoints)
-
-        #     cv2.imshow("Front Frame", front_frame)
-
-        # draw points to indicate corners
-        draw_corners(screen=pygame_screen,
-                     corner_list=corner_positions, 
+            # draw points to indicate corners
+            draw_points(screen=pygame_screen,
+                     point_list=corner_positions, 
                      colour=corner_colour[corners_saved])
+            
+        elif state == 1 and front_cap.isOpened():
+            draw_frame(screen=pygame_screen, frame=front_frame)
+
+            draw_points(screen=pygame_screen,
+                     point_list=endpoint_positions, 
+                     colour=corner_colour[corners_saved])
+
+        elif state == 2 and top_cap.isOpened() and front_cap.isOpened():
+            print("RUNNING STATE!")
+            
+        # --------------- OPENCV LOOP ----------------
+
+            if top_cap.isOpened():
+
+                # Run processing for hand keypoints
+                top_hand_keypoints = process_frame(top_frame, hands_top)
+
+                top_frame = draw_hand_points(top_frame, top_hand_keypoints)
+
+                top_frame = instrument_front.find_table(top_frame)
+
+                # cv2.imshow("Top Frame", top_frame)
+
+                # convert and draw frame in pygame
+                draw_frame(screen=pygame_screen, frame=top_frame)
+
+            # if front_cap.isOpened():
+            #     front_frame = front_cap.read()
+
+            #     if front_frame is None:
+            #         continue
+
+            #     # Run processing for hand keypoints
+            #     front_hand_keypoints = process_frame(front_frame, hands_front)
+
+            #     front_frame = draw_hand_points(front_frame, front_hand_keypoints)
+
+            #     cv2.imshow("Front Frame", front_frame)
         
         # draw piano white keys
         print(white_key_tops)
