@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 import time
 import video
 import pygame
+from instrument_top import InstrumentTop
+
+from instrument_front import InstrumentFront
 
 
 def initialize_mediapipe_hands(num_frames: int):
@@ -95,6 +98,30 @@ def draw_corners(screen, corner_list, colour):
                        color=colour,
                        center=corner,
                        radius=2)
+        
+
+def draw_white_keys(screen, key_tops, key_bases):
+    """
+    draw polygons for white keys given coordinates
+    the coordinates overlap
+    
+    :param screen: pygame screen
+    :param key_tops: coordinates of key tops
+    :param key_bases: coordinates of key bottoms
+    """
+    # don't draw anything if the lists of points are not the same length
+    if len(key_tops) != len(key_bases):
+        return None
+    
+    for i in range(len(key_tops) - 1):
+        pygame.draw.polygon(surface=screen,
+                            color="azure",
+                            points=(
+                                key_tops[i],
+                                key_tops[i+1],
+                                key_bases[i],
+                                key_bases[i+1]
+                            ))
 
 
 def main():
@@ -120,6 +147,13 @@ def main():
     # colour to indicate corner save status
     corner_colour = {True: "green", False: "red"}
 
+    # keyboard points
+    instrument_top = InstrumentTop([], 14)
+    white_key_tops = []
+    white_key_bases = []
+    black_key_tops = []
+    black_key_bases = []
+
     # -----------------------------------------
 
     # ------------ OPENCV (?) -----------------
@@ -137,6 +171,8 @@ def main():
     # front_port = os.environ.get('FRONT_PORT')
     # front_url = f"http://{front_ip}:{front_port}/video"
     # front_cap = video.Video(front_url)
+
+    instrument_front = InstrumentFront([])
 
     total_time = 0
     total_frames = 0
@@ -157,9 +193,16 @@ def main():
                 corner_count = len(corner_positions)
                 if not corners_saved and 0 <= corner_count <= 3:
                     corner_positions.append(event.pos)
+                    
                 # 4 corners clicked -> confirm
                 elif not corners_saved and corner_count == 4:
                     corners_saved = True
+                    # pass to calculator
+                    instrument_top.set_corners(corner_positions)
+                    # get back all key corners
+                    white_key_tops, white_key_bases, black_key_tops, black_key_bases = instrument_top.get_all_keys_points()
+
+        # --------------- OPENCV LOOP ----------------
 
         if top_cap.isOpened():
             top_frame = top_cap.read()
@@ -172,10 +215,12 @@ def main():
 
             top_frame = draw_hand_points(top_frame, top_hand_keypoints)
 
+            top_frame = instrument_front.find_table(top_frame)
+
             # cv2.imshow("Top Frame", top_frame)
 
             # convert and draw frame in pygame
-            draw_frame(screen=pygame_screen, frame=top_frame)
+            # draw_frame(screen=pygame_screen, frame=top_frame)
 
         # if front_cap.isOpened():
         #     front_frame = front_cap.read()
@@ -194,6 +239,12 @@ def main():
         draw_corners(screen=pygame_screen,
                      corner_list=corner_positions, 
                      colour=corner_colour[corners_saved])
+        
+        # draw piano white keys
+        print(white_key_tops)
+        # draw_white_keys(screen=pygame_screen,
+        #                 key_tops=white_key_tops,
+        #                 key_bases=white_key_bases)
 
         # if not top_cap.isOpened() and not front_cap.isOpened():
         if not top_cap.isOpened():

@@ -8,13 +8,12 @@ class InstrumentTop:
     
     def get_all_keys_points(self):
         '''
-        Docstring for get_all_keys
+        [top left, top right, bottom left, bottom right]
 
-        :param
-             num_keys: Please provide the number of white keys only it should be divisible by 7 
+        :param num_keys: Please provide the number of white keys only it should be divisible by 7 
                         for conviniency 
         
-        :returns 
+        :returns: 
             lines_top_point : the top point for each line beetween two keys 
             lines_bottom_point : the bottom point for each line beetween two keys
             black_keys_top_point :for each line beetween two keys the top two corners of the black key that
@@ -24,7 +23,6 @@ class InstrumentTop:
              
 
         '''
-
         
         lines_top_point = [(self.piano_corners[1]-self.piano_corners[0])*i+self.piano_corners[0] for i in range(self.num_keys+1)]
         lines_bottom_point = [(self.piano_corners[3]-self.piano_corners[2])*i+self.piano_corners[2]  for i in range(self.num_keys+1)]
@@ -50,13 +48,38 @@ class InstrumentTop:
                 first_top_corner = (lines_top_point[i]-lines_top_point[i-1])/4 + lines_top_point[i-1]
                 second_top_corner = (lines_top_point[i+1]-lines_top_point[i])/4 + lines_top_point[i]
                 first_bottom_corner = (value -previous)/4 + previous
-                second_botton_corner = (next - value)/4 + value
+                second_botton_corner = value - (next - value)/4
                 black_keys_top_point.append(first_top_corner)
                 black_keys_bottom_point.append(first_bottom_corner)
                 black_keys_top_point.append(second_top_corner)
                 black_keys_bottom_point.append(second_botton_corner)
 
-        return (lines_top_point ,lines_bottom_point,black_keys_top_point , black_keys_bottom_point)
+        return (lines_top_point, lines_bottom_point, black_keys_top_point, black_keys_bottom_point)
+    
+    def set_corners(self, corner_list):
+        """
+        sorts 4 corners into top left, top right, bottom left, bottom right
+        and sets the attribute
+        i do not like this algorithm but it is less typing so i'll take it
+
+        :param corner_list: list of unordered corners
+        """
+        # 4 corners sorted by x coordinate
+        corner_list.sort(key=(lambda a : a[0]))
+
+        # 2 lower x coord corners (left) sorted by y
+        left = corner_list[0:2]
+        left.sort(key=(lambda a: a[1]))
+        # 2 higher x coord corners (right) sorted by y
+        right = corner_list[2:4]
+        right.sort(key=(lambda a: a[1]))
+
+        # native python list of corner positions
+        sorted = [left[0], right[0], left[1], right[1]]
+        # convert to numpy
+        sorted_np = np.array(sorted,dtype=('int', 'int'))
+
+        self.piano_corners = sorted_np
     
 
     def get_notes(self , fingers  , lines_top_point ,lines_bottom_point,black_keys_top_point , black_keys_bottom_point) :
@@ -98,6 +121,8 @@ class InstrumentTop:
 
 
 
+    
+    
     
    
 
