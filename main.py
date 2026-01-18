@@ -217,8 +217,7 @@ def main():
                     # check whether any of the sound buttons are clicked
                     for button in all_soundbuttons:
                         if button.collides(event.pos):
-                            piano.change_sound(button.bank, button.preset)
-                            print(button.bank)
+                            piano.change_sound(button.sound)
 
 
         # Read top cap frame
@@ -298,12 +297,15 @@ def main():
                 new_width = window_width // 2
                 new_height = window_height // 2
                 draw_functions.draw_frame(screen=pygame_screen, frame=front_frame, 
-                                          top_left=(0, new_height),
+                                          top_left=np.array((0, new_height)),
                                           size=(new_width, new_height))
                 draw_functions.draw_tabletop(pygame_screen, endpoint_positions[0], endpoint_positions[1], "blue", 4, 
-                                             top_left=(0, new_height), window_width=new_width, window_height=new_height)
+                                             top_left=np.array((0, new_height)), window_width=new_width, window_height=new_height)
                 
-                draw_functions.draw_soundbuttons(pygame_screen, all_soundbuttons, pygame.mouse.get_pos())
+                draw_functions.draw_soundbuttons(pygame_screen, 
+                                                 all_soundbuttons, 
+                                                 pygame.mouse.get_pos(), 
+                                                 (piano.bank, piano.preset))
                 
             if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints_left) > 0 and len(front_hand_keypoints_left) > 0:
             # if top_cap.isOpened() and front_cap.isOpened() and len(front_hand_keypoints) > 0:

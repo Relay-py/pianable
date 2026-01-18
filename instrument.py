@@ -15,7 +15,7 @@ class Instrument:
         self.sfid = self.fs.sfload(self.soundfont_path)
 
         # set initial bank and preset
-        self.preset = initial_preset
+        self.sound = initial_preset
         self.bank = initial_bank
         self.volume = volume
 
@@ -30,7 +30,7 @@ class Instrument:
                     SoundButton(top_left=(group_top_left[0] + (size[0] + padding[0]) * b,
                                           group_top_left[1] + (size[1] + padding[1]) * p),
                                 size=size,
-                                bank=b, preset=p,
+                                sound=(b, p),
                                 text=self.fs.sfpreset_name(self.sfid, b, p),
                                 colour="steelblue1"))
         return buttons
@@ -45,9 +45,9 @@ class Instrument:
 
         self.fs.program_select(0, self.sfid, self.bank, self.preset)
 
-    def change_sound(self, bank, preset):
-        self.bank = bank
-        self.preset = preset
+    def change_sound(self, new_sound):
+        self.bank = new_sound[0]
+        self.preset = new_sound[1]
         self.fs.program_select(0, self.sfid, self.bank, self.preset)
 
     def stop(self) -> None:
