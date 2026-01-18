@@ -2,6 +2,8 @@
 
 Why buy a piano when you can print a piano?
 
+<img src="https://github.com/Relay-py/pianable/blob/main/Screenshot%202026-01-18%20102823.png" />
+
 ## Description
 
 Pianos can be expensive, occupy a large space, and are difficult to maintain. Why deal with all that hassle when you can use a computer application while also having the full piano experience?
@@ -43,5 +45,6 @@ It is highly recommended to print out the file “SingleOctavePiano.pdf” sever
 
 ### Credits:
 ZFont by Zalka downloaded from musical-artifacts.com
+
 
 
