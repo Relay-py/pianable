@@ -4,8 +4,10 @@ import random
 import numpy as np
 
 
-def unnormalize_point(screen, point):
-    width, height = screen.get_size()
+def unnormalize_point(screen, point, width=None, height=None):
+    if not width and not height:
+        width, height = screen.get_size()
+
     return (int(point[0] * width), int(point[1] * height))
 
 
@@ -84,7 +86,7 @@ def draw_points(screen, point_list, colour):
 
 
 def draw_keys(screen, key_tops, key_bases, overlap, outline_colour, outline_width,
-              top_left=np.array((0, 0)), scale_factor = 1):
+              top_left=np.array((0, 0)), scale_factor = 1, window_width=None, window_height=None):
     """
     draw polygons for white keys given coordinates
     the coordinates overlap
@@ -101,32 +103,51 @@ def draw_keys(screen, key_tops, key_bases, overlap, outline_colour, outline_widt
     # don't draw anything if the lists of points are not the same length
     if len(key_tops) != len(key_bases):
         return None
+    
+    # Unnormalize key tops and bases
+    if window_width is not None and window_height is not None:
+        key_tops = np.array([
+            [p[0] * window_width, p[1] * window_height] if p is not None else None
+            for p in key_tops
+        ], dtype=object)
+
+        key_bases = np.array([
+            [p[0] * window_width, p[1] * window_height] if p is not None else None
+            for p in key_bases
+        ], dtype=object)
+
 
     if overlap:
         step = 1
     else:
         step = 2
 
-    new_key_tops = key_tops * scale_factor + top_left
-    new_key_bases = key_bases * scale_factor + top_left
 
     for i in range(0, len(key_tops) - 1, step):
         # if no black key, don't draw
         if key_tops[i] is None:
             continue
+
+        # new_key_tops = key_tops * scale_factor + top_left
+        # new_key_bases = key_bases * scale_factor + top_left
+        new_key_top1 = key_tops[i] * scale_factor + top_left
+        new_key_top2 = key_tops[i+1] * scale_factor + top_left
+        new_key_base1 = key_bases[i] * scale_factor + top_left
+        new_key_base2 = key_bases[i+1] * scale_factor + top_left
+
         pygame.draw.polygon(surface=screen,
                             color=outline_colour,
                             points=(
-                                new_key_tops[i],
-                                new_key_tops[i+1],
-                                new_key_bases[i+1],
-                                new_key_bases[i]
+                                new_key_top1,
+                                new_key_top2,
+                                new_key_base2,
+                                new_key_base1,
                             ),
                             width=outline_width)
 
 
 def draw_tabletop(screen, left, right, outline_colour, outline_width,
-                  top_left=np.array((0, 0))):
+                  top_left=np.array((0, 0)), window_width=None, window_height=None):
     """
     draw line for where table is being detected
     
@@ -137,8 +158,8 @@ def draw_tabletop(screen, left, right, outline_colour, outline_width,
     :param outline_colour: width of key outline
     :param top_left: top left of the frame that it should be drawn above
     """
-    left = unnormalize_point(screen, left)
-    right = unnormalize_point(screen, right)
+    left = list(np.array(unnormalize_point(screen, left, window_width, window_height)) + top_left)
+    right = list(np.array(unnormalize_point(screen, right, window_width, window_height)) + top_left)
 
     pygame.draw.line(surface=screen,
                      color=outline_colour,

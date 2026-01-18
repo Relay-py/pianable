@@ -24,7 +24,6 @@ class InstrumentTop:
              
 
         '''
-        
         lines_top_point = [(self.piano_corners[1]-self.piano_corners[0])*i/self.num_keys +self.piano_corners[0] for i in range(self.num_keys+1)]
         lines_bottom_point = [(self.piano_corners[3]-self.piano_corners[2])*i/self.num_keys +self.piano_corners[2]  for i in range(self.num_keys+1)]
         black_keys_top_point =[]
