@@ -14,7 +14,7 @@ from NoteRise import RisingNote, Spark
 import draw_functions
 import random
 from log import log
-from SoundButton2 import SoundButton  , draw_gradient_background
+from SoundButton2 import SoundButton
 
 def initialize_mediapipe_hands(num_frames: int):
     # Initializes mediapipe hands models
@@ -164,6 +164,7 @@ def main():
     particles = []
     active_rising_notes = {}
     finished_notes = []
+    particles1= []
 
     # -------------------------------------------
 
@@ -172,7 +173,7 @@ def main():
     piano = Instrument(os.path.join(".", "Soundfont.sf2"), 0, 0, 50)
     # The Instrument class now uses the new SoundButton logic
     all_soundbuttons = piano.generate_soundbuttons(
-        group_top_left=(window_width // 2 + 100, 100),
+        group_top_left=(window_width // 2 + 150, 100),
         size=(180, 50),
         padding=(20, 15)
     )
@@ -237,7 +238,7 @@ def main():
 
         # Draw pygame frame for each state
         if state == SELECT_PIANO and top_cap.isOpened():
-            pygame_screen.fill((0, 0, 0))
+            pygame_screen.fill((20, 20, 20))
             draw_functions.draw_frame(screen=pygame_screen, frame=top_frame)
 
             # draw points to indicate corners
@@ -254,8 +255,7 @@ def main():
                                        colour=corner_colour[corners_saved])
 
         elif state == RUNNING and top_cap.isOpened() and front_cap.isOpened():
-            pygame_screen.fill((0, 0, 0))
-            draw_gradient_background(pygame_screen, window_width, window_height)
+            pygame_screen.fill(pygame.Color(0, 0, 0))
 
             # --------------- OPENCV LOOP ----------------
 
@@ -349,7 +349,7 @@ def main():
                     for _ in range(3):
                         particles.append(
                             Spark(px_x, px_y, active_rising_notes[midi_id].color))
-
+                            
                 # 2. Transition notes to "Finished" once finger is lifted
                 for m_id in list(active_rising_notes.keys()):
                     if m_id not in playing_midi_notes:
@@ -364,12 +364,26 @@ def main():
                     finished_notes.append(note_obj)
                 active_rising_notes.clear()
 
+                                    
+            if total_frames % 30 == 0:
+                color = random.choice([(0, 255, 150), (0, 220, 255), (255, 100, 255), (255, 255, 100)])
+                px = random.random() * window_width//2 + window_width//2
+                py = window_height
+                for _ in range(6):
+                    particles1.append(Spark(px, py, color))
+
             # Update all particles and remove dead ones
             for p in particles[:]:
                 p.update()
                 p.draw(pygame_screen)
                 if p.life <= 0:
                     particles.remove(p)
+
+            for p in particles1[:]:
+                p.update()
+                p.draw(pygame_screen)
+                if p.life <= 0:
+                    particles1.remove(p)
 
             # Draw Notes
             all_visible_notes = finished_notes + \

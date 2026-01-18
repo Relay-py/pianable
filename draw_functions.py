@@ -1,6 +1,6 @@
 import pygame
 import cv2
-from SoundButton import SoundButton
+from SoundButton2 import SoundButton
 import numpy as np
 
 
