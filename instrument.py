@@ -15,7 +15,7 @@ class Instrument:
         self.sfid = self.fs.sfload(self.soundfont_path)
 
         # set initial bank and preset
-        self.sound = initial_preset
+        self.preset = initial_preset
         self.bank = initial_bank
         self.volume = volume
 
