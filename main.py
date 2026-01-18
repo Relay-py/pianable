@@ -232,14 +232,24 @@ def main():
                 # Draw hand points
                 front_frame = draw_functions.draw_hand_points(front_frame, front_hand_keypoints)
 
-                # Filter for pressed fingers
-                pressed_fingers = instrument_front.get_pressed_fingers(front_hand_keypoints)
 
                 # convert and draw frame in pygame4
                 draw_functions.draw_frame(screen=pygame_screen, frame=front_frame, 
                                           top_left=(0, window_height//2),
                                           size=(window_width//2, window_height//2))
-        
+                
+            if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints) > 0 and len(front_hand_keypoints) > 0:
+                # Filter for pressed fingers
+                pressed_fingers = instrument_front.get_pressed_fingers(front_hand_keypoints)
+
+                # Get playing notes
+                playing_notes = instrument_top.get_notes(pressed_fingers, white_key_tops, white_key_bases, black_key_tops, black_key_bases)
+
+                print(pressed_fingers)
+                print(corner_positions)
+                print("Playing notes!", playing_notes)
+                print("----------------")
+
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

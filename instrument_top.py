@@ -78,7 +78,7 @@ class InstrumentTop:
         self.piano_corners = sorted_np
     
 
-    def get_notes(self , fingers  , lines_top_point ,lines_bottom_point,black_keys_top_point , black_keys_bottom_point) :
+    def get_notes(self, fingers, lines_top_point, lines_bottom_point, black_keys_top_point, black_keys_bottom_point) :
         notes = []
 
 
@@ -125,6 +125,12 @@ class InstrumentTop:
 
 if  __name__=="__main__":
     instrument = InstrumentTop(None,7)
+
+    pressed_fingers = [[1159.039077758789, 467.6806175708771], [1197.0160675048828, 476.21673703193665], [1227.330093383789, 467.09356784820557]]
+    piano_corners = [(509, 23), (521, 594), (1238, 27), (1271, 567)]
+
+    pressed_fingers = [[1153.8107299804688, 466.87437772750854], [1168.2228469848633, 466.8203043937683]]
+    piano_corners = [(509, 23), (521, 594), (1238, 27), (1271, 567)]
     l1 = [0,0]
     l2 = [0,7]
     l3 = [7,0]
