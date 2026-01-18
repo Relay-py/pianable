@@ -116,7 +116,7 @@ def main():
     hands_top, hands_front = initialize_mediapipe_hands(2)
 
     # Initialize the camera.
-    top_cap = video.Video(1)
+    top_cap = video.Video(0)
     front_cap = video.Video(0)
 
     # Initialize instruments
@@ -129,7 +129,7 @@ def main():
 
 
     # detect window height and width
-    window_width, window_height = pygame.display.get_surface().get_size()
+    window_size = np.array(pygame.display.get_surface().get_size())
 
     total_time = 0
     total_frames = 0
@@ -154,7 +154,7 @@ def main():
                 if state == SELECT_PIANO:
                     # 4 corners not clicked yet -> add corner
                     if len(corner_positions) <= 3:
-                        corner_positions.append(event.pos)
+                        corner_positions.append(np.array(event.pos))
                     # 4 corners clicked -> confirm
                     elif len(corner_positions) == 4:
                         state = SELECT_TABLE
@@ -166,7 +166,7 @@ def main():
                 elif state == SELECT_TABLE:
                     # 2 endpoints not clicked yet -> add endpoint
                     if len(endpoint_positions) <= 1:
-                        endpoint_positions.append(event.pos)
+                        endpoint_positions.append(np.array(event.pos))
                     # 2 endpoints clicked -> confirm
                     elif len(endpoint_positions) == 2:
                         # UPDATE INSTRUMENT_FRONT KEYPOINTS HERE
@@ -190,8 +190,7 @@ def main():
         # Draw pygame frame for each state
         if state == SELECT_PIANO and top_cap.isOpened():
             pygame_screen.fill((0, 0, 0))
-            draw_functions.draw_frame(screen=pygame_screen, frame=top_frame,
-                                      top_left=(0, 0))
+            draw_functions.draw_frame(screen=pygame_screen, frame=top_frame)
 
             # draw points to indicate corners
             draw_functions.draw_points(screen=pygame_screen,
@@ -200,8 +199,7 @@ def main():
 
         elif state == SELECT_TABLE and front_cap.isOpened():
             pygame_screen.fill((0, 0, 0))
-            draw_functions.draw_frame(screen=pygame_screen, frame=front_frame,
-                                      top_left=(0, 0))
+            draw_functions.draw_frame(screen=pygame_screen, frame=front_frame)
 
             draw_functions.draw_points(screen=pygame_screen,
                         point_list=endpoint_positions,
@@ -222,7 +220,10 @@ def main():
 
                 # convert and draw frame in pygame4
                 draw_functions.draw_frame(screen=pygame_screen, frame=top_frame, 
-                                          top_left=(0, 0), size=(window_width//2, window_height//2))
+                                          size=(window_size//2))
+                
+                # draw outline of piano
+                
 
             # Process front camera
             if front_cap.isOpened():
@@ -240,8 +241,8 @@ def main():
 
                 # convert and draw frame in pygame4
                 draw_functions.draw_frame(screen=pygame_screen, frame=front_frame, 
-                                          top_left=(0, window_height//2),
-                                          size=(window_width//2, window_height//2))
+                                          top_left=np.array((0, window_size[1]//2)),
+                                          size=(window_size//2))
                 
             if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints) > 0 and len(front_hand_keypoints) > 0:
                 # Filter for pressed fingers
