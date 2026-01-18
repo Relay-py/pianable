@@ -14,7 +14,7 @@ from NoteRise import RisingNote, Spark
 import draw_functions
 import random
 from log import log
-
+from SoundButton2 import SoundButton  , draw_gradient_background
 
 def initialize_mediapipe_hands(num_frames: int):
     # Initializes mediapipe hands models
@@ -253,7 +253,7 @@ def main():
                                        colour=corner_colour[corners_saved])
 
         elif state == RUNNING and top_cap.isOpened() and front_cap.isOpened():
-            pygame_screen.fill((0, 0, 0))
+            draw_gradient_background(pygame_screen, window_width, window_height)
 
             # --------------- OPENCV LOOP ----------------
 
@@ -301,11 +301,12 @@ def main():
                                           size=(new_width, new_height))
                 draw_functions.draw_tabletop(pygame_screen, endpoint_positions[0], endpoint_positions[1], "blue", 4, 
                                              top_left=np.array((0, new_height)), window_width=new_width, window_height=new_height)
+
                 
-                draw_functions.draw_soundbuttons(pygame_screen, 
-                                                 all_soundbuttons, 
-                                                 pygame.mouse.get_pos(), 
-                                                 (piano.bank, piano.preset))
+            mouse_p = pygame.mouse.get_pos()
+            cur_s = (piano.bank, piano.preset)
+            for button in all_soundbuttons:
+                button.draw(pygame_screen, mouse_p, cur_s)
                 
             if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints_left) > 0 and len(front_hand_keypoints_left) > 0:
             # if top_cap.isOpened() and front_cap.isOpened() and len(front_hand_keypoints) > 0:
@@ -407,3 +408,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
