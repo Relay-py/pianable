@@ -84,7 +84,7 @@ class InstrumentTop:
 
 
         for finger in fingers:
-            log(f"searchin for the following finger position {finger}")
+            # log(f"searchin for the following finger position {finger}")
             low = 0
             high = self.num_keys-1
             while (low <= high) :
@@ -99,19 +99,19 @@ class InstrumentTop:
                     else:
                         notes.append(get_white_note(mid))
                     break
-                print("is in quadrilateral value",in_quadrilateral(finger, lines_top_point[mid], lines_top_point[mid+1], lines_bottom_point[mid], lines_bottom_point[mid+1]))
-                print(f"the top point coordinates are {lines_top_point[mid]}")
-                print(f"the bottom point coordinates are {lines_bottom_point[mid]}")
-                print(f"the top point coordinates are {lines_top_point[mid+1]}")
-                print(f"the bottom point coordinates are {lines_bottom_point[mid+1]}")
-                print(is_right_of_line(finger ,lines_top_point[mid],lines_bottom_point[mid] ))
+                # print("is in quadrilateral value",in_quadrilateral(finger, lines_top_point[mid], lines_top_point[mid+1], lines_bottom_point[mid], lines_bottom_point[mid+1]))
+                # print(f"the top point coordinates are {lines_top_point[mid]}")
+                # print(f"the bottom point coordinates are {lines_bottom_point[mid]}")
+                # print(f"the top point coordinates are {lines_top_point[mid+1]}")
+                # print(f"the bottom point coordinates are {lines_bottom_point[mid+1]}")
+                # print(is_right_of_line(finger ,lines_top_point[mid],lines_bottom_point[mid] ))
             
                 if is_right_of_line(finger ,lines_top_point[mid],lines_bottom_point[mid] ) :
                     low = mid + 1
                 else:
                     high = mid - 1
 
-            log(notes)
+            # log(notes)
 
         return notes
     
