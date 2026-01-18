@@ -143,16 +143,20 @@ class InstrumentFront():
         return dist <= threshold
     
 
-    def get_pressed_fingers(self, fingers: list[list[float]]):
+    def get_pressed_fingers(
+        self,
+        front_fingers: list[list[float]],
+        top_fingers: list[list[float]]
+    ):
         """
-        Returns a list of pressed fingers
-        
-        :param fingers: list of fingers
-        :type fingers: list[list[float]]
+        Returns the set of top_fingers whose corresponding front_fingers are pressed
         """
 
-        return [finger for finger in fingers if self.is_pressed(finger, self.table_distance_threshold)]
-
+        return [
+            top_finger
+            for front_finger, top_finger in zip(front_fingers, top_fingers)
+            if self.is_pressed(front_finger, self.table_distance_threshold)
+        ]
 
     def set_endpoints(self, endpoint_list):
         """
