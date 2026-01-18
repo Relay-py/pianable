@@ -83,8 +83,9 @@ class InstrumentTop:
 
 
         for finger in fingers:
+            print("searchin for the following finger position ",finger)
             low = 0
-            high = len(lines_bottom_point)-1
+            high = self.num_keys-2
             while (low <= high) :
                 mid = low + (high - low) // 2
                 if in_quadrilateral(finger, lines_top_point[mid], lines_top_point[mid+1], lines_bottom_point[mid], lines_bottom_point[mid+1]) :
@@ -97,10 +98,15 @@ class InstrumentTop:
                     else:
                         notes.append(get_white_note(mid))
                     break
+                print("is in quadrilateral value",in_quadrilateral(finger, lines_top_point[mid], lines_top_point[mid+1], lines_bottom_point[mid], lines_bottom_point[mid+1]))
+                print(f"the top point coordinates are {lines_top_point[mid]}")
+                print(f"the bottom point coordinates are {lines_bottom_point[mid]}")
+                print(f"the top point coordinates are {lines_top_point[mid+1]}")
+                print(f"the bottom point coordinates are {lines_bottom_point[mid+1]}")
+                print(is_right_of_line(finger ,lines_top_point[mid],lines_bottom_point[mid] ))
             
                 if is_right_of_line(finger ,lines_top_point[mid],lines_bottom_point[mid] ) :
                     low = mid + 1
-
                 else:
                     high = mid - 1
 
@@ -125,8 +131,7 @@ if  __name__=="__main__":
     l4 = [7,7]
     instrument.set_corners([l1,l2,l3,l4])
     a=instrument.get_all_keys_points()
-    print(len(a[3]))
-    fingers=([2.6,4],[2.3,3]) 
+    fingers=([5.7,4],[0.5,2]) 
     b= instrument.get_notes(fingers, a[0], a[1], a[2], a[3])
     print(b)
 
