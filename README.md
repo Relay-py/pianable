@@ -28,14 +28,20 @@ Notes are considered “played” when your finger is above the note in the top-
 
 You can click on a different soundfont to change the sound the piano plays (the default is Piano 1).
 
+### Requirements:
+| Requirement | Notes |
+| --- | --- |
+| [Python3](https://www.python.org/) | Version 3.12 |
+| 2 External Webcams | We recommend [Iriun Webcam](https://iriun.com/) |
+
+To install the necessary Python dependencies, run:
+```console
+$ pip install -r requirements.txt
+```
+
+It is highly recommended to print out the file “SingleOctavePiano.pdf” several times and then cutting and taping the pages together. This allows Pianable to more accurately map a piano and for the user to more accurately see what they are playing.
+
 ### Credits:
 ZFont by Zalka downloaded from musical-artifacts.com
 
-### Requirements:
-
-Pianable works on Windows, MacOS, and Linux.
-Pianable runs on Python3 Version 3.12
-Pianable requires 2 cameras and a computer to run. 
-Pianable uses an external application to receive the camera feeds as input. We recommend using Iriun Webcam which is downloadable on Windows, MacOS, Linux, GoogleOS and iOS.
-It is highly recommended to print out the file “SingleOctavePiano.pdf” several times and then cutting and taping the pages together. This allows Pianable to more accurately map a piano and for the user to more accurately see what they are playing.
 
