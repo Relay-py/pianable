@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import time
 import video
 import pygame
+import fluidsynth
 from instrument_top import InstrumentTop
 from instrument_front import InstrumentFront
 from instrument import Instrument
@@ -70,7 +71,7 @@ def process_frame(frame, hand_model):
 def play_notes(piano: Instrument, playing_notes) -> None:
     """Plays notes on instrument
     args:
-        violin: Intrument
+        piano: Intrument
         playing_notes: set of playing notes
 
     returns:
@@ -90,6 +91,7 @@ def play_notes(piano: Instrument, playing_notes) -> None:
 SELECT_PIANO = 0
 SELECT_TABLE = 1
 RUNNING = 2
+
 
 def main():
     load_dotenv()
@@ -143,11 +145,6 @@ def main():
     instrument_top = InstrumentTop([], num_white_keys=7)
     instrument_front = InstrumentFront([], [], table_distance_threshold=0.02)
 
-    soundfont_path = ""
-    piano = Instrument(soundfont_path=soundfont_path)
-    piano.start()
-
-
     # detect window height and width
     window_width, window_height = pygame.display.get_surface().get_size()
 
@@ -156,11 +153,19 @@ def main():
 
     # list of particles that will appear when a key is played
     particles = []
-    active_rising_notes = {} 
+    active_rising_notes = {}
     finished_notes = []
 
-
     # -------------------------------------------
+
+
+    # ------------- INIT SOUNDS ------------------
+    piano = Instrument(os.path.join(".", "Soundfont.sf2"), 0, 0, 50)
+    all_soundbuttons = piano.generate_soundbuttons(group_top_left=(window_width // 2 + 100, 50),
+                                                  size=(150, 50),
+                                                  padding=(25, 10))
+
+    piano.start()
 
     # --------------- EVENT LOOP ----------------
     while running:
@@ -173,7 +178,8 @@ def main():
             # check for mouse left click
             if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
                 # Normalize clicked position
-                clicked_position = np.array([event.pos[0] / window_width, event.pos[1] / window_height])
+                clicked_position = np.array(
+                    [event.pos[0] / window_width, event.pos[1] / window_height])
 
                 # draw piano corner points
                 if state == SELECT_PIANO:
@@ -198,6 +204,14 @@ def main():
                         state = RUNNING
                         instrument_front.set_endpoints(endpoint_positions)
 
+                elif state == RUNNING:
+                    # check whether any of the sound buttons are clicked
+                    for button in all_soundbuttons:
+                        if button.collides(event.pos):
+                            piano.change_sound(button.bank, button.preset)
+                            print(button.bank)
+
+
         # Read top cap frame
         if top_cap.isOpened():
             top_frame = top_cap.read()
@@ -219,16 +233,16 @@ def main():
 
             # draw points to indicate corners
             draw_functions.draw_points(screen=pygame_screen,
-                        point_list=corner_positions,
-                        colour=corner_colour[corners_saved])
+                                       point_list=corner_positions,
+                                       colour=corner_colour[corners_saved])
 
         elif state == SELECT_TABLE and front_cap.isOpened():
             pygame_screen.fill((0, 0, 0))
             draw_functions.draw_frame(screen=pygame_screen, frame=front_frame)
 
             draw_functions.draw_points(screen=pygame_screen,
-                        point_list=endpoint_positions,
-                        colour=corner_colour[corners_saved])
+                                       point_list=endpoint_positions,
+                                       colour=corner_colour[corners_saved])
 
         elif state == RUNNING and top_cap.isOpened() and front_cap.isOpened():
             pygame_screen.fill((0, 0, 0))
@@ -241,20 +255,20 @@ def main():
                 top_hand_keypoints = process_frame(top_frame, hands_top)
 
                 # Draw hand points
-                top_frame = draw_functions.draw_hand_points(top_frame, top_hand_keypoints)
+                top_frame = draw_functions.draw_hand_points(
+                    top_frame, top_hand_keypoints)
 
                 # convert and draw frame in pygame4
                 new_width = window_width // 2
                 new_height = window_height // 2
-                draw_functions.draw_frame(screen=pygame_screen, frame=top_frame, 
-                                          top_left=(0, 0), size=(new_width, new_height))
-                # Draw white keys
-                draw_functions.draw_keys(screen=pygame_screen, key_tops=white_key_tops, key_bases=white_key_bases, overlap=True,
-                                         outline_colour="blue", outline_width=3, window_width=new_width, window_height=new_height)
-                # Draw black keys
-                draw_functions.draw_keys(screen=pygame_screen, key_tops=black_key_tops, key_bases=black_key_bases, overlap=False,
-                                         outline_colour="red", outline_width=3, window_width=new_width, window_height=new_height)
-
+                # draw_functions.draw_frame(screen=pygame_screen, frame=top_frame,
+                #                           size=(new_width, new_height))
+                # # Draw white keys
+                # draw_functions.draw_keys(screen=pygame_screen, key_tops=white_key_tops, key_bases=white_key_bases, overlap=True,
+                #                          outline_colour="blue", outline_width=3, window_width=new_width, window_height=new_height)
+                # # Draw black keys
+                # draw_functions.draw_keys(screen=pygame_screen, key_tops=black_key_tops, key_bases=black_key_bases, overlap=False,
+                #                          outline_colour="red", outline_width=3, window_width=new_width, window_height=new_height)
 
             # Process front camera
             if front_cap.isOpened():
@@ -267,26 +281,31 @@ def main():
                 front_hand_keypoints = process_frame(front_frame, hands_front)
 
                 # Draw hand points
-                front_frame = draw_functions.draw_hand_points(front_frame, front_hand_keypoints)
-
+                front_frame = draw_functions.draw_hand_points(
+                    front_frame, front_hand_keypoints)
 
                 # convert and draw frame in pygame4
                 new_width = window_width // 2
                 new_height = window_height // 2
-                draw_functions.draw_frame(screen=pygame_screen, frame=front_frame, 
-                                          top_left=(0, new_height),
-                                          size=(new_width, new_height))
-                draw_functions.draw_tabletop(pygame_screen, endpoint_positions[0], endpoint_positions[1], "blue", 4, 
-                                             top_left=(0, new_height), window_width=new_width, window_height=new_height)
-                
+                # draw_functions.draw_frame(screen=pygame_screen, frame=front_frame,
+                #                           top_left=np.array((0, new_height)),
+                #                           size=(new_width, new_height))
+                # draw_functions.draw_tabletop(pygame_screen, endpoint_positions[0], endpoint_positions[1], "blue", 4, top_left=np.array((0, new_height)), window_width=new_width, window_height=new_height)
+
+                draw_functions.draw_soundbuttons(pygame_screen, all_soundbuttons, pygame.mouse.get_pos())
+
+
             if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints) > 0 and len(front_hand_keypoints) > 0:
-            # if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints) > 0:
+                # if top_cap.isOpened() and front_cap.isOpened() and len(top_hand_keypoints) > 0:
                 # Filter for pressed fingers
-                pressed_fingers = instrument_front.get_pressed_fingers(front_hand_keypoints)
+                pressed_fingers = instrument_front.get_pressed_fingers(
+                    front_hand_keypoints)
 
                 # Get playing notes
-                playing_notes = instrument_top.get_notes(pressed_fingers, white_key_tops, white_key_bases, black_key_tops, black_key_bases)
-                playing_midi_notes = {instrument_top.index_to_midi(note) for note in playing_notes[0]}
+                playing_notes = instrument_top.get_notes(
+                    pressed_fingers, white_key_tops, white_key_bases, black_key_tops, black_key_bases)
+                playing_midi_notes = {instrument_top.index_to_midi(
+                    note) for note in playing_notes[0]}
 
                 print("Pressed fingers:", pressed_fingers)
                 print("Corner positions", corner_positions)
@@ -294,23 +313,26 @@ def main():
                 print("----------------")
 
                 play_notes(piano, playing_midi_notes)
-                #set up all the smoke for curent playing notes
-                for note_idx, coord , width , x_coord in zip(playing_notes[0], playing_notes[1] ,playing_notes[2],playing_notes[3]):
+                # set up all the smoke for curent playing notes
+                for note_idx, coord, width, x_coord in zip(playing_notes[0], playing_notes[1], playing_notes[2], playing_notes[3]):
                     midi_id = instrument_top.index_to_midi(note_idx)
                     # Use coordinate relative to top-left camera view
                     px_x = coord[0] * window_width // 2
                     px_y = coord[1] * window_height // 2
-                    px_w =  width * window_width // 2
+                    px_w = width * window_width // 2
                     px_x_top_left = x_coord * window_width // 2
 
                     if midi_id not in active_rising_notes:
 
-                        color = random.choice([(0, 255, 150), (0, 220, 255), (255, 100, 255), (255, 255, 100)])
-                        active_rising_notes[midi_id] = RisingNote(px_x_top_left, px_y, px_w, color)
-                    
+                        color = random.choice(
+                            [(0, 255, 150), (0, 220, 255), (255, 100, 255), (255, 255, 100)])
+                        active_rising_notes[midi_id] = RisingNote(
+                            px_x_top_left, px_y, px_w, color)
+
                     # Add sparkles at the key point every frame the finger is down
                     for _ in range(3):
-                        particles.append(Spark(px_x, px_y, active_rising_notes[midi_id].color))
+                        particles.append(
+                            Spark(px_x, px_y, active_rising_notes[midi_id].color))
 
                 # 2. Transition notes to "Finished" once finger is lifted
                 for m_id in list(active_rising_notes.keys()):
@@ -318,7 +340,7 @@ def main():
                         note_obj = active_rising_notes.pop(m_id)
                         note_obj.is_active = False
                         finished_notes.append(note_obj)
-            
+
             else:
                 piano.remove_all_notes()
                 for m_id, note_obj in active_rising_notes.items():
@@ -330,17 +352,19 @@ def main():
             for p in particles[:]:
                 p.update()
                 p.draw(pygame_screen)
-                if p.life <= 0: particles.remove(p)
+                if p.life <= 0:
+                    particles.remove(p)
 
             # Draw Notes
-            all_visible_notes = finished_notes + list(active_rising_notes.values())
+            all_visible_notes = finished_notes + \
+                list(active_rising_notes.values())
             for note in all_visible_notes[:]:
                 note.update()
                 note.draw(pygame_screen)
                 # Cleanup notes that flew off the top
                 if note.y + note.h < -100:
-                    if note in finished_notes: finished_notes.remove(note)
-
+                    if note in finished_notes:
+                        finished_notes.remove(note)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
