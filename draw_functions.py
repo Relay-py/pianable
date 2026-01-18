@@ -168,7 +168,7 @@ def draw_tabletop(screen, left, right, outline_colour, outline_width,
                      width=outline_width)
     
 
-def draw_soundbuttons(screen, buttons, mouse_position):
+def draw_soundbuttons(screen, buttons, mouse_position, current_sound):
     """
     draw buttons
 
@@ -176,7 +176,7 @@ def draw_soundbuttons(screen, buttons, mouse_position):
     :param buttons: list of SoundButton objects
     """
     for button in buttons:
-        if button.collides(mouse_position):
+        if button.collides(mouse_position) or current_sound == button.sound:
             # mouse is on top of button
             pygame.draw.rect(surface=screen, color=button.colour, rect=button.rect,
                             border_radius=15)

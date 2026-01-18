@@ -6,20 +6,18 @@ class SoundButton:
     """
 
 
-    def __init__(self, top_left, size, bank, preset, text, colour):
+    def __init__(self, top_left, size, sound, text, colour):
         """
         make new button
         
         :param self: self
         :param top_left: (x, y) of top left corner
-        :param bank: associated soundfont sound's bank number
-        :param preset: associated soundfont sound's preset number
+        :param sound: (bank, preset)
         :param text: text to display on the button
         :param colour: colour of the button
         """
         self.rect = pygame.Rect(top_left[0], top_left[1], size[0], size[1])
-        self.bank = bank
-        self.preset = preset
+        self.sound = sound
         self.colour = colour
         self.text, self.hovertext = self.make_text(text)
 
