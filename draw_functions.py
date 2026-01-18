@@ -22,20 +22,36 @@ def draw_hand_points_pg(screen, hand_keypoints):
                            center=point, radius=2)
 
 
-def draw_frame(screen, frame, x=0, y=0, width=None, height=None):
+def draw_frame(screen, frame, top_left, size=None):
     """
     draws opencv frame on pygame screen
 
     :param screen: pygame screen
     :param frame: frame to draw (opencv brg matrix)
-    :param start_point: top left corner formatted (x, y)
+    :param top_left: top left corner formatted (x, y)
+    :param size: (width, height) to draw it at
     """
-    if width is not None and height is not None:
-        frame = cv2.resize(frame, (width, height))
+    # get frame info
+    frame_height, frame_width, num_channels = frame.shape
+    
+    # get size of target area to display on (default is entire screen)
+    if size is None:
+        target_width, target_height = screen.get_size()
+    else:
+        target_width, target_height = size
 
+    # find scaled size depending which aspect is bigger compared to target
+    scale_factor = min(target_width/frame_width, target_height/frame_height)
+    new_frame_width, new_frame_height = frame_width * scale_factor, frame_height * scale_factor
+
+    # resize if needed
+    if new_frame_width != frame_width:
+        frame = cv2.resize(frame, (new_frame_width, new_frame_height))
+
+    # draw frame
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame_surface = pygame.surfarray.make_surface(frame_rgb.swapaxes(0, 1))
-    screen.blit(frame_surface, (x, y))
+    screen.blit(frame_surface, top_left)
 
 
 def draw_points(screen, point_list, colour):
