@@ -123,7 +123,7 @@ class InstrumentTop:
                 else:
                     high = mid - 1
 
-        print(mid_cordinates_played_note, type(mid_cordinates_played_note))
+        # print(mid_cordinates_played_note, type(mid_cordinates_played_note))
         return set(notes) , mid_cordinates_played_note , width_played_key , top_coner_left_x_coordinate
     
     

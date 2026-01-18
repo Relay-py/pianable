@@ -34,7 +34,7 @@ class InstrumentFront():
         x2, y2 = contour[-1]
 
         if x2 - x1 == 0:
-            print(contour)
+            # print(contour)
             raise ValueError("Contour is vertical line")
         
         slope = (y2 - y1) / (x2 - x1)
@@ -121,8 +121,8 @@ class InstrumentFront():
         if len(slopes) > 1 and len(y_intercepts) > 1:
             median_slope = slopes[len(slopes) // 2]
             median_y_intercept = y_intercepts[len(y_intercepts) // 2]
-            print(slopes, median_slope, median_y_intercept)
-            print("-------------------")
+            # print(slopes, median_slope, median_y_intercept)
+            # print("-------------------")
             cv2.line(contour_img,(0, int(median_y_intercept)),(width, int(median_slope * width + median_y_intercept)),(255,255,255),5)
 
         return edges

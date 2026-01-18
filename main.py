@@ -254,6 +254,7 @@ def main():
                                        colour=corner_colour[corners_saved])
 
         elif state == RUNNING and top_cap.isOpened() and front_cap.isOpened():
+            pygame_screen.fill((0, 0, 0))
             draw_gradient_background(pygame_screen, window_width, window_height)
 
             # --------------- OPENCV LOOP ----------------
@@ -322,10 +323,10 @@ def main():
                 playing_midi_notes = {instrument_top.index_to_midi(
                     note) for note in playing_notes[0]}
 
-                print("Pressed fingers:", pressed_fingers)
-                print("Corner positions", corner_positions)
-                print("Playing notes!", playing_midi_notes)
-                print("----------------")
+                # print("Pressed fingers:", pressed_fingers)
+                # print("Corner positions", corner_positions)
+                # print("Playing notes!", playing_midi_notes)
+                # print("----------------")
 
                 play_notes(piano, playing_midi_notes)
                 # set up all the smoke for curent playing notes
@@ -394,8 +395,8 @@ def main():
         clock.tick(60)
 
     average_time = 1000 * (total_time / total_frames)
-    print("Average time per frame: ", average_time, "ms")
-    print(1000 / average_time, "fps")
+    # print("Average time per frame: ", average_time, "ms")
+    # print(1000 / average_time, "fps")
 
     top_cap.release()
     front_cap.release()
