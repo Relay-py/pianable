@@ -63,8 +63,6 @@ def in_quadrilateral(p, a, b, c, d):
     
     quadrilateral_area = triangle_area(a, b, c) + triangle_area(b, d, c)
     point_triangle_sum = triangle_area(a, b, p) + triangle_area(a, p, c) + triangle_area(c, p, d) + triangle_area(d, p, b)
-    print(quadrilateral_area)
-    print(point_triangle_sum)
     return abs(quadrilateral_area - point_triangle_sum) < 0.1
 
 
@@ -73,12 +71,12 @@ def is_right_of_line(p, a, b):
     '''checks if point p is in the right of the line between a and b '''
     if (b[0] - a[0]) < 0.001 :
         return  a[0] < p[0] 
-    slope  = (a[1] - b[1] )/ (b[0] - a[0] )
-    basis  = -a[1] - slope*a[0]
+    slope  = (  b[1]-a[1] )/ (b[0] - a[0] )
+    basis  = a[1] - slope*a[0]
     if slope > 0 :
-        return -p[1]- (slope * p[0] +basis) > 0
+        return p[1]- (slope * p[0] +basis) < 0
     else :
-        return -p[1]- (slope * p[0] +basis) < 0
+        return p[1]- (slope * p[0] +basis) > 0
     
 def get_white_note(index):
     return 5*(index//7) +index + index%7 -1 *(index%7 > 2)

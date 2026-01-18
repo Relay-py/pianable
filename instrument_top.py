@@ -1,5 +1,6 @@
 import numpy as np
 from math_functions import in_quadrilateral , is_right_of_line , get_white_note
+from log import log
 
 class InstrumentTop:
     def __init__(self,piano_corners,num_white_keys):
@@ -83,9 +84,9 @@ class InstrumentTop:
 
 
         for finger in fingers:
-            print("searchin for the following finger position ",finger)
+            log(f"searchin for the following finger position {finger}")
             low = 0
-            high = self.num_keys-2
+            high = self.num_keys-1
             while (low <= high) :
                 mid = low + (high - low) // 2
                 if in_quadrilateral(finger, lines_top_point[mid], lines_top_point[mid+1], lines_bottom_point[mid], lines_bottom_point[mid+1]) :
@@ -110,6 +111,8 @@ class InstrumentTop:
                 else:
                     high = mid - 1
 
+            log(notes)
+
         return notes
     
     
@@ -121,6 +124,12 @@ class InstrumentTop:
 
 
 
+def test(corners, fingers ):
+    instrument = InstrumentTop(None,7)
+    instrument.set_corners(corners)
+    a=instrument.get_all_keys_points()
+    b= instrument.get_notes(fingers, a[0], a[1], a[2], a[3])
+    print(b)
 
 
 
@@ -130,18 +139,11 @@ if  __name__=="__main__":
 
     pressed_fingers = [[1159.039077758789, 467.6806175708771], [1197.0160675048828, 476.21673703193665], [1227.330093383789, 467.09356784820557]]
     piano_corners = [(509, 23), (521, 594), (1238, 27), (1271, 567)]
+    test(piano_corners , pressed_fingers)
+    # pressed_fingers = [[1153.8107299804688, 466.87437772750854], [1168.2228469848633, 466.8203043937683]]
+    # piano_corners = [(509, 23), (521, 594), (1238, 27), (1271, 567)]
+    # test(piano_corners , pressed_fingers)
 
-    pressed_fingers = [[1153.8107299804688, 466.87437772750854], [1168.2228469848633, 466.8203043937683]]
-    piano_corners = [(509, 23), (521, 594), (1238, 27), (1271, 567)]
-    l1 = [0,0]
-    l2 = [0,7]
-    l3 = [7,0]
-    l4 = [7,7]
-    instrument.set_corners([l1,l2,l3,l4])
-    a=instrument.get_all_keys_points()
-    fingers=([5.7,4],[0.5,2]) 
-    b= instrument.get_notes(fingers, a[0], a[1], a[2], a[3])
-    print(b)
 
 
     
