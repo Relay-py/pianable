@@ -115,7 +115,7 @@ def main():
     hands_top, hands_front = initialize_mediapipe_hands(2)
 
     # Initialize the camera.
-    top_cap = video.Video(1)
+    top_cap = video.Video(0)
     front_cap = video.Video(0)
 
     # Initialize instruments
