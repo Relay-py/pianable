@@ -37,9 +37,9 @@ class InstrumentTop:
                 black_keys_bottom_point.append(None)
 
             else: 
-                value = ((lines_top_point[i] - lines_bottom_point[i]) * 3 / 10) + lines_bottom_point[i]
-                previous = ((lines_top_point[i-1] - lines_bottom_point[i-1]) * 3 / 10) + lines_bottom_point[i-1]
-                next  = ((lines_top_point[i+1] - lines_bottom_point[i+1]) * 3 / 10) + lines_bottom_point[i+1]
+                value = ((lines_top_point[i] - lines_bottom_point[i]) * 4.3 / 10) + lines_bottom_point[i]
+                previous = ((lines_top_point[i-1] - lines_bottom_point[i-1]) * 4.3 / 10) + lines_bottom_point[i-1]
+                next  = ((lines_top_point[i+1] - lines_bottom_point[i+1]) * 4.3/ 10) + lines_bottom_point[i+1]
 
                 first_top_corner =lines_top_point[i] -  (lines_top_point[i]-lines_top_point[i-1])/4 
                 second_top_corner = (lines_top_point[i+1]-lines_top_point[i])/4 + lines_top_point[i]

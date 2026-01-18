@@ -149,9 +149,9 @@ def main():
     instrument_top = InstrumentTop([], num_white_keys=7)
     instrument_front = InstrumentFront([], [], table_distance_threshold=0.015)
 
-    soundfont_path = "Soundfont.sf2"
-    piano = Instrument(soundfont_path=soundfont_path, preset=0, volume=100)
-    piano.start()
+    # soundfont_path = "Soundfont.sf2"
+    # piano = Instrument(soundfont_path=soundfont_path, preset=0, volume=100)
+    # piano.start()
 
 
     # detect window height and width
@@ -270,14 +270,14 @@ def main():
                 # convert and draw frame in pygame4
                 new_width = window_width // 2
                 new_height = window_height // 2
-                # draw_functions.draw_frame(screen=pygame_screen, frame=top_frame,
-                #                           size=(new_width, new_height))
-                # # Draw white keys
-                # draw_functions.draw_keys(screen=pygame_screen, key_tops=white_key_tops, key_bases=white_key_bases, overlap=True,
-                #                          outline_colour="blue", outline_width=3, window_width=new_width, window_height=new_height)
-                # # Draw black keys
-                # draw_functions.draw_keys(screen=pygame_screen, key_tops=black_key_tops, key_bases=black_key_bases, overlap=False,
-                #                          outline_colour="red", outline_width=3, window_width=new_width, window_height=new_height)
+                draw_functions.draw_frame(screen=pygame_screen, frame=top_frame,
+                                          size=(new_width, new_height))
+                # Draw white keys
+                draw_functions.draw_keys(screen=pygame_screen, key_tops=white_key_tops, key_bases=white_key_bases, overlap=True,
+                                         outline_colour="blue", outline_width=3, window_width=new_width, window_height=new_height)
+                # Draw black keys
+                draw_functions.draw_keys(screen=pygame_screen, key_tops=black_key_tops, key_bases=black_key_bases, overlap=False,
+                                         outline_colour="red", outline_width=3, window_width=new_width, window_height=new_height)
 
             # Process front camera
             if front_cap.isOpened():
