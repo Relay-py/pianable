@@ -82,7 +82,7 @@ def play_notes(piano: Instrument, playing_notes) -> None:
         None
     """
 
-    for i in range(50, 140):
+    for i in range(30, 150):
         if piano.is_playing(i):
             if i not in playing_notes:
                 piano.remove_note(i)
@@ -142,11 +142,11 @@ def main():
     hands_top, hands_front = initialize_mediapipe_hands(2)
 
     # Initialize the camera.
-    top_cap = video.Video(0)
-    front_cap = video.Video(2)
+    top_cap = video.Video(1)
+    front_cap = video.Video(0)
 
     # Initialize instruments
-    instrument_top = InstrumentTop([], num_white_keys=7)
+    instrument_top = InstrumentTop([], num_white_keys=21)
     instrument_front = InstrumentFront([], [], table_distance_threshold=0.015)
 
     # soundfont_path = "Soundfont.sf2"

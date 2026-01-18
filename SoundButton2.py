@@ -47,6 +47,11 @@ class SoundButton:
         # Re-render text color for active state
         final_text = self.font.render(self.text_str, True, text_color)
         screen.blit(final_text, self.text_rect)
+    def collides(self, position):
+        """
+        returns whether a point is within the button
+        """
+        return self.rect.collidepoint(position)
 
 def draw_gradient_background(screen, width, height):
     color_top = (10, 10, 20)      # Deep Midnight
